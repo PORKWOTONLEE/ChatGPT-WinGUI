@@ -1,0 +1,9 @@
+.vs
+ChatGUI.sdf
+ChatGUI.opensdf
+ChatGUI.VC.*
+ipch
+UpgradeLog*
+Build
+Reference/DuiLib/Build
+Common/Skins/project.dui

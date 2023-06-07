@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<Window size="400,120">
+	<Font id="0" name="微软雅黑" size="12" />
+	<VerticalLayout>
+		<Container name="outline_container" width="400" height="100" pos="0,0,400,100" float="true" bkcolor="0xFFFFFFFF" bordercolor="0xFFC0C0C0" bordersize="2" borderround="15,15">
+			<VerticalLayout>
+				<Control pos="0,0,0,5" height="5" />
+				<HorizontalLayout>
+					<Control pos="0,0,10,0" width="10" />
+					<RichEdit name="msg" multiline="true" font="0" readonly="true" valign="center" childvalign="vcenter" />
+					<Control pos="0,0,10,0" width="10" />
+				</HorizontalLayout>
+				<Control pos="0,0,0,5" height="5" />
+			</VerticalLayout>
+		</Container>
+		<Label name="meta_msg" text="发送成功" width="400" height="20" align="center" font="0" textcolor="0xFFFFFFFF" pos="0,100,400,120" float="true" />
+	</VerticalLayout>
+</Window>
