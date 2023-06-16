@@ -110,6 +110,12 @@ void MainWindow::Notify(TNotifyUI & msg)
 void MainWindow::StartConversation(void)
 {
 	// ignore empty msg
+	if (Common::GetInstance()->GetCurrentConversationStatus() != kIdle)
+	{
+		return;
+	}
+
+	// ignore empty msg
 	if (user_msg_edit_->GetText().GetLength()==0)
 	{
 		return;
