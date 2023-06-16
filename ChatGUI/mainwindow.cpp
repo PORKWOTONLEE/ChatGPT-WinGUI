@@ -137,6 +137,8 @@ void MainWindow::StartConversation(void)
 		return;
 	}
 	
+	chat_box_->EndDown();
+
 	user_msg_edit_->SetText(_T(""));
 }
 

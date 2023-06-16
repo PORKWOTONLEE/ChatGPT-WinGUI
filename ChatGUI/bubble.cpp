@@ -32,8 +32,6 @@ void Bubble::SetMsgText(CDuiString text)
 {
 	msg_->SetText(text);
 
-	((CListUI *)GetOwner())->EndDown();
-
 	NeedParentUpdate();
 }
 
@@ -103,42 +101,38 @@ SIZE Bubble::EstimateSize(SIZE szAvailable)
 	SIZE msg_check_sz = { 0 }, msg_sz = { 0 };
 	int current_line_len = 0, next_line_len = 0, line_height = 0;
 	CDuiPoint current_line_point, next_line_point;
+	// multi line or single line
 	if (msg_->GetLineCount() > 1)
 	{
-		// multi line
-		current_line_len = msg_->LineLength(1);
-		next_line_len = msg_->LineLength(2);
-		current_line_point = msg_->PosFromChar(current_line_len);
-		next_line_point = msg_->PosFromChar(current_line_len + next_line_len);
-		line_height = next_line_point.y - current_line_point.y;
+		// caculate line height
+		for (int i = 0; i < msg_->GetLineCount() - 1; ++i)
+		{
+			current_line_len = msg_->LineLength(i);
+			next_line_len = msg_->LineLength(i + 1);
+			current_line_point = msg_->PosFromChar(current_line_len);
+			next_line_point = msg_->PosFromChar(current_line_len + next_line_len);
+			if (next_line_point.y - current_line_point.y != 0)
+			{
+				line_height = next_line_point.y - current_line_point.y;
+				break;
+			}
+		}
+
 		if (line_height == 0)
 		{
-			::GetTextExtentExPoint(dc, msg_->GetText(), lstrlenW(msg_->GetText()), max_msg_width, NULL, NULL, &msg_check_sz);
-			if (msg_check_sz.cx > max_msg_width)
-			{
-				msg_sz.cx = max_msg_width;
-				line_height = msg_check_sz.cy + 5;
-				msg_sz.cy = line_height * (msg_check_sz.cx / max_msg_width + ((msg_check_sz.cx%max_msg_width > msg_check_sz.cy) ? 1 : 0));
-			}
-			else
-			{
-				msg_sz = msg_check_sz;
-			}
+			line_height = 23;
 		}
-		else
-		{
-			msg_sz.cx = max_msg_width;
-			msg_sz.cy = line_height * msg_->GetLineCount();
-		}
+
+		msg_sz.cx = max_msg_width;
+		msg_sz.cy = line_height * msg_->GetLineCount();
 	}
 	else
 	{
-		// single line
 		::GetTextExtentExPoint(dc, msg_->GetText(), lstrlenW(msg_->GetText()), max_msg_width, NULL, NULL, &msg_check_sz);
 		if (msg_check_sz.cx > max_msg_width)
 		{
 			msg_sz.cx = msg_check_sz.cx;
-			line_height = msg_check_sz.cy + 5;
+			line_height = msg_check_sz.cy + 6;
 			msg_sz.cy = line_height * (msg_check_sz.cx / max_msg_width + ((msg_check_sz.cx%max_msg_width > 2 * msg_check_sz.cy) ? 1 : 0));
 		}
 		else

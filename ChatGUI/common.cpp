@@ -159,7 +159,7 @@ CDuiString Common::GetCurrentConversationUserText(void)
 
 BOOL Common::SetConversationBotMsg(wchar_t *bot_msg)
 {
-	if (current_conversation_.user_bubble->GetMsgText())
+	if (current_conversation_.bot_bubble->GetMsgText().GetLength() != 0)
 	{
 		CDuiString exist_text = current_conversation_.bot_bubble->GetMsgText();
 		exist_text.Append(bot_msg);
@@ -169,6 +169,8 @@ BOOL Common::SetConversationBotMsg(wchar_t *bot_msg)
 	{
 		current_conversation_.bot_bubble->SetMsgText(bot_msg);
 	}
+
+	((CListUI *)current_conversation_.bot_bubble->GetOwner())->EndDown();
 
 	return TRUE;
 }
