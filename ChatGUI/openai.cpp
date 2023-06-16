@@ -254,14 +254,7 @@ void OpenAI::ResponseProcess(void)
 
 void OpenAI::DeinitWebinterface()
 {
-	if (response_buffer_.ptr!= NULL)
-	{
-		free(response_buffer_.ptr);
-		response_buffer_.ptr = NULL;
-		response_buffer_.size = 0;
-	}
 	curl_easy_cleanup(curl_);
-	curl_ = NULL;
 	curl_result_ = CURLE_OK;
 
 	ClearWebinterfaceBuffer(&request_buffer_);
