@@ -100,11 +100,10 @@ SIZE Bubble::EstimateSize(SIZE szAvailable)
 	max_msg_width = szAvailable.cx / 3;
 
 	// caculate msg size
-	SIZE msg_check_sz, msg_sz;
-	int current_line_len, next_line_len, line_height, line_count_extra;
+	SIZE msg_check_sz = { 0 }, msg_sz = { 0 };
+	int current_line_len = 0, next_line_len = 0, line_height = 0;
 	CDuiPoint current_line_point, next_line_point;
-	::GetTextExtentExPoint(dc, msg_->GetText(), lstrlenW(msg_->GetText()), max_msg_width, NULL, NULL, &msg_check_sz);
-	if (msg_check_sz.cx > max_msg_width)
+	if (msg_->GetLineCount() > 1)
 	{
 		// multi line
 		current_line_len = msg_->LineLength(1);
@@ -114,24 +113,38 @@ SIZE Bubble::EstimateSize(SIZE szAvailable)
 		line_height = next_line_point.y - current_line_point.y;
 		if (line_height == 0)
 		{
-			line_height = msg_check_sz.cy;
+			::GetTextExtentExPoint(dc, msg_->GetText(), lstrlenW(msg_->GetText()), max_msg_width, NULL, NULL, &msg_check_sz);
+			if (msg_check_sz.cx > max_msg_width)
+			{
+				msg_sz.cx = max_msg_width;
+				line_height = msg_check_sz.cy + 5;
+				msg_sz.cy = line_height * (msg_check_sz.cx / max_msg_width + ((msg_check_sz.cx%max_msg_width > msg_check_sz.cy) ? 1 : 0));
+			}
+			else
+			{
+				msg_sz = msg_check_sz;
+			}
 		}
-
-		line_count_extra = 0;
-		for (int i = 0; i < msg_->GetLineCount(); ++i)
+		else
 		{
-			current_line_len = msg_->LineLength(i);
-			line_count_extra += current_line_len / max_msg_width;
+			msg_sz.cx = max_msg_width;
+			msg_sz.cy = line_height * msg_->GetLineCount();
 		}
-
-		msg_sz.cx = max_msg_width;
-		msg_sz.cy = line_height * (msg_->GetLineCount() + line_count_extra);
 	}
 	else
 	{
 		// single line
-		msg_sz.cx = msg_check_sz.cx;
-		msg_sz.cy = msg_check_sz.cy;
+		::GetTextExtentExPoint(dc, msg_->GetText(), lstrlenW(msg_->GetText()), max_msg_width, NULL, NULL, &msg_check_sz);
+		if (msg_check_sz.cx > max_msg_width)
+		{
+			msg_sz.cx = msg_check_sz.cx;
+			line_height = msg_check_sz.cy + 5;
+			msg_sz.cy = line_height * (msg_check_sz.cx / max_msg_width + ((msg_check_sz.cx%max_msg_width > 2 * msg_check_sz.cy) ? 1 : 0));
+		}
+		else
+		{
+			msg_sz = msg_check_sz;
+		}
 	}
 
 	// caculate meta msg size
