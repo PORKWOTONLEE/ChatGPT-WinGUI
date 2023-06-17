@@ -28,6 +28,18 @@ CDuiString MainWindow::GetSkinFile()
 
 LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
+	switch (uMsg)
+	{
+	case WM_TIMER:
+		if (wParam == BOT_MSG_PRINT_TIMER)
+		{
+			m_PaintManager.SendNotify(Common::GetInstance()->GetCurrentConversationBotBubble(), DUI_MSGTYPE_TIMER);
+		}
+		break;
+	default:
+		break;
+	}
+
 	return WindowImplBase::HandleMessage(uMsg, wParam, lParam);
 }
 
@@ -136,6 +148,8 @@ void MainWindow::StartConversation(void)
 
 		return;
 	}
+
+	::SetTimer(GetHWND(), BOT_MSG_PRINT_TIMER, 50, NULL);
 	
 	chat_box_->EndDown();
 

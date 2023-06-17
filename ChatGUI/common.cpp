@@ -152,27 +152,14 @@ BOOL Common::StopConversation(void)
 	return TRUE;
 }
 
-CDuiString Common::GetCurrentConversationUserText(void)
+Bubble * Common::GetCurrentConversationUserBubble(void)
 {
-	return current_conversation_.user_bubble->GetMsgText();
+	return current_conversation_.user_bubble;
 }
 
-BOOL Common::SetConversationBotMsg(wchar_t *bot_msg)
+Bubble * Common::GetCurrentConversationBotBubble(void)
 {
-	if (current_conversation_.bot_bubble->GetMsgText().GetLength() != 0)
-	{
-		CDuiString exist_text = current_conversation_.bot_bubble->GetMsgText();
-		exist_text.Append(bot_msg);
-		current_conversation_.bot_bubble->SetMsgText(exist_text);
-	}
-	else
-	{
-		current_conversation_.bot_bubble->SetMsgText(bot_msg);
-	}
-
-	((CListUI *)current_conversation_.bot_bubble->GetOwner())->EndDown();
-
-	return TRUE;
+	return current_conversation_.bot_bubble;
 }
 
 void Common::SetCurrentConversationStatus(ConversationStatus status)

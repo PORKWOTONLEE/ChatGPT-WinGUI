@@ -46,5 +46,9 @@ private:
 
 	BubbleType bubble_type_;
 
+	int line_height_;
+
+	CDuiString bot_msg_print_buffer_;
+	int        bot_msg_print_counter_{1};
 };
 

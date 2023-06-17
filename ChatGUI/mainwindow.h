@@ -2,6 +2,8 @@
 
 #include "UIlib.h"
 
+#define BOT_MSG_PRINT_TIMER 20
+
 using namespace DuiLib;
 
 class MainWindow :

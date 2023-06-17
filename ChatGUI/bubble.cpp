@@ -30,9 +30,14 @@ LPVOID Bubble::GetInterface(LPCTSTR pstrName)
 
 void Bubble::SetMsgText(CDuiString text)
 {
-	msg_->SetText(text);
-
-	NeedParentUpdate();
+	if (bubble_type_ == kUserBubble)
+	{
+		msg_->SetText(text);
+	}
+	else
+	{
+		bot_msg_print_buffer_ = text;
+	}
 }
 
 CDuiString Bubble::GetMsgText(void)
@@ -92,6 +97,13 @@ SIZE Bubble::EstimateSize(SIZE szAvailable)
 	dc = ::GetDC(Common::GetInstance()->GetMainWindowHWND());
 	font = GetManager()->GetFont(msg_->GetFont());
 	::SelectObject(dc, font);
+	TEXTMETRIC tm;
+	GetTextMetrics(dc, &tm);
+	int nLineHeight = tm.tmHeight + tm.tmExternalLeading;
+	
+	RECT rcText{ 0, 0, 0, 0 };
+	::DrawText(dc, _T("Hello, World!"), lstrlenW(_T("Hello, World!")), &rcText, DT_CALCRECT);
+	rcText;
 
 	// max msg width limit
 	int max_msg_width = 0;
@@ -99,41 +111,41 @@ SIZE Bubble::EstimateSize(SIZE szAvailable)
 
 	// caculate msg size
 	SIZE msg_check_sz = { 0 }, msg_sz = { 0 };
-	int current_line_len = 0, next_line_len = 0, line_height = 0;
+	int current_line_len = 0, next_line_len = 0;
 	CDuiPoint current_line_point, next_line_point;
-	// multi line or single line
 	if (msg_->GetLineCount() > 1)
 	{
-		// caculate line height
+		// multi line 
+		// caculate not zero minimum line height
 		for (int i = 0; i < msg_->GetLineCount() - 1; ++i)
 		{
-			current_line_len = msg_->LineLength(i);
-			next_line_len = msg_->LineLength(i + 1);
+			current_line_len += msg_->LineLength(i);
+			next_line_len += msg_->LineLength(i + 1);
 			current_line_point = msg_->PosFromChar(current_line_len);
 			next_line_point = msg_->PosFromChar(current_line_len + next_line_len);
-			if (next_line_point.y - current_line_point.y != 0)
+			if ((line_height_ == 0 || next_line_point.y - current_line_point.y < line_height_) &&
+				next_line_point.y - current_line_point.y != 0)
 			{
-				line_height = next_line_point.y - current_line_point.y;
-				break;
+				line_height_ = next_line_point.y - current_line_point.y;
 			}
 		}
-
-		if (line_height == 0)
+		if (line_height_ == 0)
 		{
-			line_height = 23;
+			line_height_ = 23;
 		}
 
 		msg_sz.cx = max_msg_width;
-		msg_sz.cy = line_height * msg_->GetLineCount();
+		msg_sz.cy = line_height_ * msg_->GetLineCount();
 	}
 	else
 	{
+		// single line
 		::GetTextExtentExPoint(dc, msg_->GetText(), lstrlenW(msg_->GetText()), max_msg_width, NULL, NULL, &msg_check_sz);
 		if (msg_check_sz.cx > max_msg_width)
 		{
 			msg_sz.cx = msg_check_sz.cx;
-			line_height = msg_check_sz.cy + 6;
-			msg_sz.cy = line_height * (msg_check_sz.cx / max_msg_width + ((msg_check_sz.cx%max_msg_width > 2 * msg_check_sz.cy) ? 1 : 0));
+			line_height_ = msg_check_sz.cy + 6;
+			msg_sz.cy = line_height_ * (msg_check_sz.cx / max_msg_width + ((msg_check_sz.cx%max_msg_width > 2 * msg_check_sz.cy) ? 1 : 0));
 		}
 		else
 		{
@@ -142,7 +154,7 @@ SIZE Bubble::EstimateSize(SIZE szAvailable)
 	}
 
 	// caculate meta msg size
-	SIZE meta_msg_check_sz, meta_msg_sz;
+	SIZE meta_msg_check_sz = { 0 }, meta_msg_sz = { 0 };
 	::GetTextExtentExPoint(dc, meta_msg_->GetText(), lstrlenW(meta_msg_->GetText()), max_msg_width, NULL, NULL, &meta_msg_check_sz);
 	meta_msg_sz.cx = meta_msg_check_sz.cx;
 	meta_msg_sz.cy = 30;
@@ -197,6 +209,35 @@ void Bubble::Notify(TNotifyUI& msg)
 			outline_container_->SetBkColor(0xFFFFFFFF);
 			msg_->SetTextColor(0XFF333333);
 			break;
+		}
+	}
+	else if (msg.pSender == this && msg.sType == DUI_MSGTYPE_TIMER)
+	{
+		if (bubble_type_ != kUserBubble &&
+			bot_msg_print_buffer_.GetLength() != 0)
+		{
+			msg_->SetText(bot_msg_print_buffer_.Left(bot_msg_print_counter_));
+
+			((CListUI *)GetOwner())->EndDown();
+
+			NeedParentUpdate();
+
+			++bot_msg_print_counter_;
+
+			if (bot_msg_print_counter_ > bot_msg_print_buffer_.GetLength())
+			{
+				::KillTimer(Common::GetInstance()->GetMainWindowHWND(), BOT_MSG_PRINT_TIMER);
+
+				msg_->SetText(bot_msg_print_buffer_);
+
+				bot_msg_print_buffer_ = _T("");
+
+				bot_msg_print_counter_ = 1;
+
+				Common::GetInstance()->SetCurrentConversationStatus(kRecieveSuccess);
+
+				Common::GetInstance()->EndConversation();
+			}
 		}
 	}
 }

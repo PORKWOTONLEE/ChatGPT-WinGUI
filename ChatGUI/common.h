@@ -38,8 +38,8 @@ public:
 	BOOL StartConversation(CListUI *owner, CDuiString user_msg);
 	BOOL EndConversation(BOOL force_end = false);
 	BOOL StopConversation(void);
-	CDuiString GetCurrentConversationUserText(void);
-	BOOL SetConversationBotMsg(wchar_t * bot_msg);
+	Bubble *GetCurrentConversationUserBubble(void);
+	Bubble *GetCurrentConversationBotBubble(void);
 	void SetCurrentConversationStatus(ConversationStatus status);
 	ConversationStatus GetCurrentConversationStatus(void);
 

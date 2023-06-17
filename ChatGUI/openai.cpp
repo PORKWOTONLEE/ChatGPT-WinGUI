@@ -80,11 +80,13 @@ void OpenAI::ClearWebinterfaceBuffer(WebinterfaceBuffer * buffer)
 	if (buffer->ptr != NULL)
 	{
 		memset(buffer->ptr, '\0', MAX_BUFFER_SIZE);
+		buffer->size = 0;
 	}
 
 	if (buffer->wptr != NULL)
 	{
 		memset(buffer->wptr, '\0', MAX_BUFFER_SIZE);
+		buffer->wsize= 0;
 	}
 }
 
@@ -173,7 +175,7 @@ void OpenAI::InitWebinterface(void)
 	Common::GetInstance()->SetCurrentConversationStatus(kSending);
 
 	// fill request buffer
-	lstrcpyW(request_buffer_.wptr, (wchar_t *)Common::GetInstance()->GetCurrentConversationUserText().GetData());
+	lstrcpyW(request_buffer_.wptr, (wchar_t *)Common::GetInstance()->GetCurrentConversationUserBubble()->GetMsgText().GetData());
 	request_buffer_.wsize = lstrlenW(request_buffer_.wptr);
 	strcpy_s(request_buffer_.ptr, MAX_BUFFER_SIZE, current_task_.json_constructor(request_buffer_.wptr));
 	request_buffer_.size = strlen(request_buffer_.ptr);
@@ -228,6 +230,8 @@ void OpenAI::RequestProcess()
 	else
 	{
 		Common::GetInstance()->SetCurrentConversationStatus(kSendFail);
+
+		Common::GetInstance()->EndConversation();
 	}
 }
 
@@ -240,16 +244,7 @@ void OpenAI::ResponseProcess(void)
 
 	Common::GetInstance()->SetCurrentConversationStatus(kRecieving);
 
-	// print char in interval 
-	for (int i = 0; i < response_buffer_.wsize; ++i)
-	{
-		Sleep(50);
-		wchar_t single_wchar[2] = { 0 };
-		wmemcpy_s(single_wchar, 2, &response_buffer_.wptr[i], 1);
-		Common::GetInstance()->SetConversationBotMsg(single_wchar);
-	}
-
-	Common::GetInstance()->SetCurrentConversationStatus(kRecieveSuccess);
+	Common::GetInstance()->GetCurrentConversationBotBubble()->SetMsgText(response_buffer_.wptr);
 }
 
 void OpenAI::DeinitWebinterface()
@@ -259,8 +254,6 @@ void OpenAI::DeinitWebinterface()
 
 	ClearWebinterfaceBuffer(&request_buffer_);
 	ClearWebinterfaceBuffer(&response_buffer_);
-
-	Common::GetInstance()->EndConversation();
 }
 
 char *OpenAI::CompletionJsonConstructor(wchar_t *user_msg)
