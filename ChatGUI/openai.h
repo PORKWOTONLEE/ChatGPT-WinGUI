@@ -20,7 +20,6 @@ public:
 	typedef enum
 	{
 		kNoTask,
-		// chat
 		kCompletion,
 		kTaskAll
 		
@@ -46,12 +45,12 @@ public:
 	static void ClearWebinterfaceBuffer(WebinterfaceBuffer *buffer);
 	static DWORD WINAPI WebinterfaceLoop(LPVOID param);
 	static void InitWebinterface(void);
-	static void RequestConfig(void);
 	static void RequestProcess(void);
 	static void ResponseProcess(void);
 	static void DeinitWebinterface();
 	static size_t ResponseBufferCallback(char * data, size_t size, size_t nmemb, void * response_buffer);
 
+	// Task
 	static void SetTask(TaskType task_type);
 	static void StartTask(TaskType task_type);
 	static void EndTask(void);

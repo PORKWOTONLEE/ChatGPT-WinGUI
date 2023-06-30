@@ -45,38 +45,45 @@ HWND Common::GetMainWindowHWND(void)
 	return mainwin_hwnd_;
 }
 
-void Common::SaveAPIKey(CDuiString api_key)
+CDuiString Common::LoadConfig(LPCWSTR key)
 {
-	api_key_ = api_key;
+	TCHAR value[100];
+	::GetPrivateProfileString(_T("ChatGUI"), key, _T("default"), value, 100, Common::GetInstance()->GetApplicationDir() + _T(".\\ChatGUI.ini"));
 
-	::WritePrivateProfileString(_T("ChatGUI"), _T("API Key"), api_key, GetApplicationDir() + _T(".\\ChatGUI.ini"));
+	return value;
+}
+
+void Common::SaveConfig(LPCWSTR key, LPCWSTR value)
+{
+	::WritePrivateProfileString(_T("ChatGUI"), key, value, GetApplicationDir() + _T(".\\ChatGUI.ini"));
 }
 
 CDuiString Common::LoadAPIKey(void)
 {
-	TCHAR api_key[100];
-	::GetPrivateProfileString(_T("ChatGUI"), _T("API Key"), _T(""), api_key, 100, Common::GetInstance()->GetApplicationDir() + _T(".\\ChatGUI.ini"));
+	api_key_ = LoadConfig(_T("API Key"));
 
+	return api_key_;
+}
+
+void Common::SaveAPIKey(CDuiString api_key)
+{
 	api_key_ = api_key;
 
-	return api_key;
+	SaveConfig(_T("API Key"), api_key);
+}
+
+CDuiString Common::LoadProxy(void)
+{
+	proxy_ = LoadConfig(_T("Proxy"));
+
+	return proxy_;
 }
 
 void Common::SaveProxy(CDuiString proxy)
 {
 	proxy_ = proxy;
 
-	::WritePrivateProfileString(_T("ChatGUI"), _T("Proxy"), proxy, GetApplicationDir() + _T(".\\ChatGUI.ini"));
-}
-
-CDuiString Common::LoadProxy(void)
-{
-	TCHAR proxy[100];
-	::GetPrivateProfileString(_T("ChatGUI"), _T("Proxy"), _T(""), proxy, 100, Common::GetInstance()->GetApplicationDir() + _T(".\\ChatGUI.ini"));
-
-	proxy_ = proxy;
-
-	return proxy_;
+	SaveConfig(_T("Proxy"), proxy);
 }
 
 CDuiString Common::GetApplicationDir(void)
@@ -177,14 +184,14 @@ void Common::SetCurrentConversationStatus(ConversationStatus status)
 		if (current_conversation_.status == kSending)
 		{
 			current_conversation_.status = status;
-			current_conversation_.user_bubble->SetMetaMsgText(_T("Send Failed"), Bubble::kErrorMetaMsg);
+			current_conversation_.user_bubble->SetMetaMsgText(_T("Sent Failed"), Bubble::kErrorMetaMsg);
 		}
 		break;
 	case kSendSuccess:
 		if (current_conversation_.status == kSending)
 		{
 			current_conversation_.status = status;
-			current_conversation_.user_bubble->SetMetaMsgText(_T("Send Successed"));
+			current_conversation_.user_bubble->SetMetaMsgText(_T("Sent Successfully"));
 		}
 		break;
 	case kRecieving:
@@ -198,7 +205,7 @@ void Common::SetCurrentConversationStatus(ConversationStatus status)
 		if (current_conversation_.status == kRecieving)
 		{
 			current_conversation_.status = status;
-			current_conversation_.bot_bubble->SetMetaMsgText(_T("Recieve Successed"));
+			current_conversation_.bot_bubble->SetMetaMsgText(_T("Recieved Successfully"));
 		}
 		break;
 	default:

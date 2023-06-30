@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "openai.h"
 #include "common.h"
-#include "mainwindow.h"
 
 BOOL   OpenAI::webinterfaceloop_start_ = TRUE;
 HANDLE OpenAI::webinterface_thread_    = NULL;
@@ -149,13 +148,7 @@ DWORD WINAPI OpenAI::WebinterfaceLoop(LPVOID param)
 	{
 		while (current_task_.type != kNoTask)
 		{
-			Sleep(200);
-
 			InitWebinterface();
-
-			RequestConfig();
-
-			Sleep(200);
 
 			RequestProcess();
 
@@ -172,19 +165,17 @@ DWORD WINAPI OpenAI::WebinterfaceLoop(LPVOID param)
 
 void OpenAI::InitWebinterface(void)
 {
-	Common::GetInstance()->SetCurrentConversationStatus(kSending);
+	curl_ = curl_easy_init();
+}
 
+void OpenAI::RequestProcess()
+{
 	// fill request buffer
 	lstrcpyW(request_buffer_.wptr, (wchar_t *)Common::GetInstance()->GetCurrentConversationUserBubble()->GetMsgText().GetData());
 	request_buffer_.wsize = lstrlenW(request_buffer_.wptr);
 	strcpy_s(request_buffer_.ptr, MAX_BUFFER_SIZE, current_task_.json_constructor(request_buffer_.wptr));
 	request_buffer_.size = strlen(request_buffer_.ptr);
 
-	curl_ = curl_easy_init();
-}
-
-void OpenAI::RequestConfig()
-{
 	// url
 	curl_easy_setopt(curl_, CURLOPT_URL, current_task_.url);
 	// ssl config
@@ -218,10 +209,10 @@ void OpenAI::RequestConfig()
 	// repsonse code
 	long response_code;
 	curl_easy_getinfo(curl_, CURLINFO_RESPONSE_CODE, &response_code);
-}
 
-void OpenAI::RequestProcess()
-{
+	Common::GetInstance()->SetCurrentConversationStatus(kSending);
+
+	// start connect
 	curl_result_ = curl_easy_perform(curl_);
 	if (curl_result_ == CURLE_OK)
 	{

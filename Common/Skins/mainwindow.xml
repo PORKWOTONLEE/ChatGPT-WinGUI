@@ -8,7 +8,7 @@
 			<HorizontalLayout height="44" pos="0,0,0,44">
 				<Control pos="0,0,10,0" width="10" />
 				<Label name="icon" width="44" height="44" pos="0,0,44,44" bkimage="file='icon.png' dest='8,8,36,36' " />
-				<Label name="title" text="ChatGPT" font="1" textcolor="0xFFFFFFFF" disabledtextcolor="0xFF000000" />
+				<Label name="title" text="ChatGUI" font="1" textcolor="0xFFFFFFFF" disabledtextcolor="0xFF000000" />
 				<Button name="close_btn" width="32" height="32" hotbkcolor="0xFFE4E8EF" textcolor="0xFFFFFFFF" hottextcolor="0xFF000000" pushedtextcolor="0xFFFFFFFF" text="×" font="2" textpadding="0,0,0,4" pos="0,0,32,32" padding="0,6,0,0" bordercolor="0xFFE4E8EF" bordersize="2" borderround="15,15" tooltip="close" />
 				<Control pos="0,0,10,0" width="10" />
 			</HorizontalLayout>
@@ -19,6 +19,8 @@
 				<Edit name="api_key_edit" width="300" height="30" endellipsis="true" autovscroll="true" wantctrlreturn="true" multiline="true" wordbreak="true" font="0" textpadding="10,5,10,5" pos="0,0,300,30" padding="0,5,0,5" bordercolor="0xFFBFCBD9" bordersize="2" borderround="10,10" visible="false" />
 				<Button name="proxy_btn" width="80" textcolor="0xFF333333" hottextcolor="0xFF000000" text="Proxy" font="0" pos="0,0,80,0" tooltip="Click here to input your proxy address If your got VPN. e.g 127.0.0.1:7890" />
 				<Edit name="proxy_edit" width="300" height="30" endellipsis="true" autovscroll="true" wantctrlreturn="true" multiline="true" wordbreak="true" font="0" textpadding="10,5,10,5" pos="0,0,300,30" padding="0,5,0,5" bordercolor="0xFFBFCBD9" bordersize="2" borderround="10,10" visible="false" />
+				<Button name="context_btn" width="80" textcolor="0xFF333333" hottextcolor="0xFF000000" text="Context" font="0" pos="0,0,80,0" tooltip="Click here to input number of context connect to current conversation. May help AI to understand, but need more token." />
+				<Edit name="context_edit" width="300" height="30" endellipsis="true" autovscroll="true" wantctrlreturn="true" multiline="true" wordbreak="true" font="0" textpadding="10,5,10,5" pos="0,0,300,30" padding="0,5,0,5" bordercolor="0xFFBFCBD9" bordersize="2" borderround="10,10" visible="false" />
 			</HorizontalLayout>
 		</Container>
 		<Container childalign="center" bkcolor="0xFFFFFFFF">

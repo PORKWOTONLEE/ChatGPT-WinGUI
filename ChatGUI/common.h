@@ -21,6 +21,12 @@ typedef struct
 
 }Conversation;
 
+
+typedef struct 
+{
+
+}ConversationList;
+
 class Common
 {
 public:
@@ -30,6 +36,8 @@ public:
 	void SetMainWindowHWND(HWND mainwin_hwnd);
 	HWND GetMainWindowHWND(void);
 	void SaveAPIKey(CDuiString api_key);
+	CDuiString LoadConfig(LPCWSTR key);
+	void SaveConfig(LPCWSTR key, LPCWSTR value);
 	CDuiString LoadAPIKey(void);
 	void SaveProxy(CDuiString proxy);
 	CDuiString LoadProxy(void);
