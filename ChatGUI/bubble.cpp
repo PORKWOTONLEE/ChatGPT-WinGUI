@@ -13,21 +13,6 @@ Bubble::~Bubble()
 {
 }
 
-LPCWSTR Bubble::GetClass() const
-{
-	return L"Bubble";
-}
-
-LPVOID Bubble::GetInterface(LPCTSTR pstrName)
-{
-	if (_tcscmp(pstrName, _T("Bubble")) == 0)
-	{
-		return static_cast<Bubble*>(this);
-	}
-
-	return CControlUI::GetInterface(pstrName);
-}
-
 void Bubble::SetMsgText(CDuiString text)
 {
 	if (bubble_type_ == kUserBubble)
@@ -69,6 +54,65 @@ void Bubble::SetMetaMsgText(LPCTSTR text, MetaMsgType type)
 	NeedParentUpdate();
 }
 
+void Bubble::Notify(TNotifyUI& msg)
+{
+	if (msg.pSender == this && msg.sType == DUI_MSGTYPE_WINDOWINIT)
+	{
+		// init some controlUI 
+		outline_container_ = dynamic_cast<CContainerUI *>(GetManager()->FindControl(_T("outline_container")));
+		msg_               = dynamic_cast<CRichEditUI *>(GetManager()->FindControl(_T("msg")));
+		meta_msg_          = dynamic_cast<CLabelUI *>(GetManager()->FindControl(_T("meta_msg")));
+
+		// set bubble style xml
+		switch (bubble_type_)
+		{
+		case kUserBubble:
+			outline_container_->SetBorderColor(0xFFBFCBD9);
+			outline_container_->SetBkColor(0xFFFFFFFF);
+			msg_->SetTextColor(0XFF333333);
+			break;
+		case kBotBubble:
+			outline_container_->SetBorderColor(0xFFBFCBD9);
+			outline_container_->SetBkColor(0xFF333333);
+			msg_->SetTextColor(0XFFFFFFFF);
+			break;
+		default:
+			outline_container_->SetBorderColor(0xFFBFCBD9);
+			outline_container_->SetBkColor(0xFFFFFFFF);
+			msg_->SetTextColor(0XFF333333);
+			break;
+		}
+	}
+	else if (msg.pSender == this && msg.sType == DUI_MSGTYPE_TIMER)
+	{
+		if (bubble_type_ != kUserBubble &&
+			bot_msg_print_buffer_.GetLength() != 0)
+		{
+			msg_->SetText(bot_msg_print_buffer_.Left(bot_msg_print_counter_));
+
+			((CListUI *)GetOwner())->EndDown();
+
+			NeedParentUpdate();
+
+			++bot_msg_print_counter_;
+
+			if (bot_msg_print_counter_ > bot_msg_print_buffer_.GetLength())
+			{
+				::KillTimer(Common::GetInstance()->GetMainWindowHWND(), BOT_MSG_PRINT_TIMER);
+
+				msg_->SetText(bot_msg_print_buffer_);
+
+				bot_msg_print_buffer_ = _T("");
+
+				bot_msg_print_counter_ = 1;
+
+				Common::GetInstance()->SetCurrentConversationStatus(kRecieveSuccess);
+
+				Common::GetInstance()->EndConversation();
+			}
+		}
+	}
+}
 void Bubble::DoInit() 
 {
 	CDialogBuilder builder;
@@ -175,63 +219,18 @@ SIZE Bubble::EstimateSize(SIZE szAvailable)
 	return bubble_sz;
 }
 
-void Bubble::Notify(TNotifyUI& msg)
+LPCWSTR Bubble::GetClass() const
 {
-	if (msg.pSender == this && msg.sType == DUI_MSGTYPE_WINDOWINIT)
+	return L"Bubble";
+}
+
+LPVOID Bubble::GetInterface(LPCTSTR pstrName)
+{
+	if (_tcscmp(pstrName, _T("Bubble")) == 0)
 	{
-		// init some controlUI 
-		outline_container_ = dynamic_cast<CContainerUI *>(GetManager()->FindControl(_T("outline_container")));
-		msg_               = dynamic_cast<CRichEditUI *>(GetManager()->FindControl(_T("msg")));
-		meta_msg_          = dynamic_cast<CLabelUI *>(GetManager()->FindControl(_T("meta_msg")));
-
-		// set bubble style xml
-		switch (bubble_type_)
-		{
-		case kUserBubble:
-			outline_container_->SetBorderColor(0xFFBFCBD9);
-			outline_container_->SetBkColor(0xFFFFFFFF);
-			msg_->SetTextColor(0XFF333333);
-			break;
-		case kBotBubble:
-			outline_container_->SetBorderColor(0xFFBFCBD9);
-			outline_container_->SetBkColor(0xFF333333);
-			msg_->SetTextColor(0XFFFFFFFF);
-			break;
-		default:
-			outline_container_->SetBorderColor(0xFFBFCBD9);
-			outline_container_->SetBkColor(0xFFFFFFFF);
-			msg_->SetTextColor(0XFF333333);
-			break;
-		}
+		return static_cast<Bubble*>(this);
 	}
-	else if (msg.pSender == this && msg.sType == DUI_MSGTYPE_TIMER)
-	{
-		if (bubble_type_ != kUserBubble &&
-			bot_msg_print_buffer_.GetLength() != 0)
-		{
-			msg_->SetText(bot_msg_print_buffer_.Left(bot_msg_print_counter_));
 
-			((CListUI *)GetOwner())->EndDown();
-
-			NeedParentUpdate();
-
-			++bot_msg_print_counter_;
-
-			if (bot_msg_print_counter_ > bot_msg_print_buffer_.GetLength())
-			{
-				::KillTimer(Common::GetInstance()->GetMainWindowHWND(), BOT_MSG_PRINT_TIMER);
-
-				msg_->SetText(bot_msg_print_buffer_);
-
-				bot_msg_print_buffer_ = _T("");
-
-				bot_msg_print_counter_ = 1;
-
-				Common::GetInstance()->SetCurrentConversationStatus(kRecieveSuccess);
-
-				Common::GetInstance()->EndConversation();
-			}
-		}
-	}
+	return CControlUI::GetInterface(pstrName);
 }
 

@@ -19,6 +19,7 @@ public:
     virtual LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
 	virtual void Notify(TNotifyUI& msg);
 
+private:
 	void MenuToggler(CControlUI *widget);
 	void LoadConfig(void);
 	void SaveConfig(CControlUI *widget);

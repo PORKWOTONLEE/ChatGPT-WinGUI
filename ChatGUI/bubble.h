@@ -27,17 +27,18 @@ public:
 	Bubble(CListUI *owner, BubbleType bubble_type = kUserBubble);
 	~Bubble();
 
+	void SetMsgText(CDuiString text);
+	CDuiString GetMsgText(void);
+
+	void SetMetaMsgText(LPCTSTR text, MetaMsgType type = kNormalMetaMsg);
+
+private:
 	void Notify(TNotifyUI& msg);
 	void DoInit();
     SIZE EstimateSize(SIZE szAvailable);
 
 	LPCWSTR GetClass() const;
 	LPVOID GetInterface(LPCTSTR pstrName);
-
-	void SetMsgText(CDuiString text);
-	CDuiString GetMsgText(void);
-
-	void SetMetaMsgText(LPCTSTR text, MetaMsgType type = kNormalMetaMsg);
 
 private:
 	CContainerUI *outline_container_;
