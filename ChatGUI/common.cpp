@@ -48,7 +48,7 @@ HWND Common::GetMainWindowHWND(void)
 CDuiString Common::LoadConfig(LPCWSTR key)
 {
 	TCHAR value[100];
-	::GetPrivateProfileString(_T("ChatGUI"), key, _T("default"), value, 100, Common::GetInstance()->GetApplicationDir() + _T(".\\ChatGUI.ini"));
+	::GetPrivateProfileString(_T("ChatGUI"), key, _T(""), value, 100, Common::GetInstance()->GetApplicationDir() + _T(".\\ChatGUI.ini"));
 
 	return value;
 }
