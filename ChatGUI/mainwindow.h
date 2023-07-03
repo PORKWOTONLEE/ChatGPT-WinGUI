@@ -19,6 +19,9 @@ public:
     virtual LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
 	virtual void Notify(TNotifyUI& msg);
 
+	void MenuToggler(CControlUI *widget);
+	void LoadConfig(void);
+	void SaveConfig(CControlUI *widget);
 	void StartConversation(void);
 
 private:
