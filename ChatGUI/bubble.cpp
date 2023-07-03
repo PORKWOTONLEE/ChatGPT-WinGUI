@@ -97,14 +97,7 @@ SIZE Bubble::EstimateSize(SIZE szAvailable)
 	dc = ::GetDC(Common::GetInstance()->GetMainWindowHWND());
 	font = GetManager()->GetFont(msg_->GetFont());
 	::SelectObject(dc, font);
-	TEXTMETRIC tm;
-	GetTextMetrics(dc, &tm);
-	int nLineHeight = tm.tmHeight + tm.tmExternalLeading;
 	
-	RECT rcText{ 0, 0, 0, 0 };
-	::DrawText(dc, _T("Hello, World!"), lstrlenW(_T("Hello, World!")), &rcText, DT_CALCRECT);
-	rcText;
-
 	// max msg width limit
 	int max_msg_width = 0;
 	max_msg_width = szAvailable.cx / 3;

@@ -47,15 +47,17 @@ void MainWindow::Notify(TNotifyUI & msg)
 {
 	if (msg.sType == DUI_MSGTYPE_WINDOWINIT)
 	{
-		chat_box_      = dynamic_cast<CListUI *>(m_PaintManager.FindControl(_T("chat_box")));
-		user_msg_edit_ = dynamic_cast<CRichEditUI *>(m_PaintManager.FindControl(_T("user_msg_edit")));
-		api_key_edit_  = dynamic_cast<CEditUI *>(m_PaintManager.FindControl(_T("api_key_edit")));
-		proxy_edit_    = dynamic_cast<CEditUI *>(m_PaintManager.FindControl(_T("proxy_edit")));
-		close_btn_     = dynamic_cast<CButtonUI *>(m_PaintManager.FindControl(_T("close_btn")));
-		send_msg_btn_  = dynamic_cast<CButtonUI *>(m_PaintManager.FindControl(_T("send_msg_btn")));
-		api_key_btn_   = dynamic_cast<CButtonUI *>(m_PaintManager.FindControl(_T("api_key_btn")));
-		proxy_btn_     = dynamic_cast<CButtonUI *>(m_PaintManager.FindControl(_T("proxy_btn")));
-		endown_btn_    = dynamic_cast<CButtonUI *>(m_PaintManager.FindControl(_T("endown_btn")));
+		chat_box_         = dynamic_cast<CListUI *>(m_PaintManager.FindControl(_T("chat_box")));
+		user_msg_edit_    = dynamic_cast<CEditUI *>(m_PaintManager.FindControl(_T("user_msg_edit")));
+		api_key_edit_     = dynamic_cast<CEditUI *>(m_PaintManager.FindControl(_T("api_key_edit")));
+		proxy_edit_       = dynamic_cast<CEditUI *>(m_PaintManager.FindControl(_T("proxy_edit")));
+		context_checkbox_ = dynamic_cast<CCheckBoxUI *>(m_PaintManager.FindControl(_T("context_checkbox")));
+		close_btn_        = dynamic_cast<CButtonUI *>(m_PaintManager.FindControl(_T("close_btn")));
+		send_msg_btn_     = dynamic_cast<CButtonUI *>(m_PaintManager.FindControl(_T("send_msg_btn")));
+		api_key_btn_      = dynamic_cast<CButtonUI *>(m_PaintManager.FindControl(_T("api_key_btn")));
+		proxy_btn_        = dynamic_cast<CButtonUI *>(m_PaintManager.FindControl(_T("proxy_btn")));
+		context_btn_      = dynamic_cast<CButtonUI *>(m_PaintManager.FindControl(_T("context_btn")));
+		endown_btn_       = dynamic_cast<CButtonUI *>(m_PaintManager.FindControl(_T("endown_btn")));
 
 		// set mainwin hwnd
 		Common::GetInstance()->GetInstance()->SetMainWindowHWND(GetHWND());
@@ -66,6 +68,7 @@ void MainWindow::Notify(TNotifyUI & msg)
 		// load user config 
 		api_key_edit_->SetText(Common::GetInstance()->LoadAPIKey());
 		proxy_edit_->SetText(Common::GetInstance()->LoadProxy());
+		context_checkbox_->SetCheck(Common::GetInstance()->LoadContext());
 
 		// hide the vscrollbar
 		chat_box_->GetVerticalScrollBar()->SetAttribute(_T("width"), _T("0"));
@@ -81,6 +84,13 @@ void MainWindow::Notify(TNotifyUI & msg)
 			Common::GetInstance()->SaveProxy(proxy_edit_->GetText());
 		}
 	}
+	else if (msg.sType == DUI_MSGTYPE_SELECTCHANGED)
+	{
+		if (msg.pSender == context_checkbox_)
+		{
+			Common::GetInstance()->SaveContext(context_checkbox_->GetCheck());
+		}
+	}
 	else if (msg.sType == DUI_MSGTYPE_RETURN)
 	{
 		if (msg.pSender == api_key_edit_)
@@ -90,6 +100,10 @@ void MainWindow::Notify(TNotifyUI & msg)
 		else if (msg.pSender == proxy_edit_)
 		{
 			proxy_edit_->SetVisible(FALSE);
+		}
+		else if (msg.pSender == user_msg_edit_)
+		{
+			StartConversation();
 		}
 	}
 	else if (msg.sType == DUI_MSGTYPE_CLICK)
@@ -106,11 +120,19 @@ void MainWindow::Notify(TNotifyUI & msg)
 		{
 			api_key_edit_->SetVisible(!api_key_edit_->IsVisible());
 			proxy_edit_->SetVisible(FALSE);
+			context_checkbox_->SetVisible(FALSE);
 		}
 		else if (msg.pSender == proxy_btn_)
 		{
 			proxy_edit_->SetVisible(!proxy_edit_->IsVisible());
 			api_key_edit_->SetVisible(FALSE);
+			context_checkbox_->SetVisible(FALSE);
+		}
+		else if (msg.pSender == context_btn_)
+		{
+			context_checkbox_->SetVisible(!context_checkbox_->IsVisible());
+			api_key_edit_->SetVisible(FALSE);
+			proxy_edit_->SetVisible(FALSE);
 		}
 		else if (msg.pSender == endown_btn_)
 		{

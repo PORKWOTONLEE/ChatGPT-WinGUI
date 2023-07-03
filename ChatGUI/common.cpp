@@ -58,32 +58,41 @@ void Common::SaveConfig(LPCWSTR key, LPCWSTR value)
 	::WritePrivateProfileString(_T("ChatGUI"), key, value, GetApplicationDir() + _T(".\\ChatGUI.ini"));
 }
 
-CDuiString Common::LoadAPIKey(void)
-{
-	api_key_ = LoadConfig(_T("API Key"));
-
-	return api_key_;
-}
-
 void Common::SaveAPIKey(CDuiString api_key)
 {
-	api_key_ = api_key;
-
 	SaveConfig(_T("API Key"), api_key);
 }
 
-CDuiString Common::LoadProxy(void)
+CDuiString Common::LoadAPIKey(void)
 {
-	proxy_ = LoadConfig(_T("Proxy"));
-
-	return proxy_;
+	return	LoadConfig(_T("API Key"));
 }
 
 void Common::SaveProxy(CDuiString proxy)
 {
-	proxy_ = proxy;
-
 	SaveConfig(_T("Proxy"), proxy);
+}
+
+CDuiString Common::LoadProxy(void)
+{
+	return LoadConfig(_T("Proxy"));
+}
+
+void Common::SaveContext(BOOL checked)
+{
+	if (checked)
+	{
+		SaveConfig(_T("Context"), _T("TRUE"));
+	}
+	else
+	{
+		SaveConfig(_T("Context"), _T("FALSE"));
+	}
+}
+
+BOOL Common::LoadContext(void)
+{
+	return LoadConfig(_T("Context")) == _T("TRUE");
 }
 
 CDuiString Common::GetApplicationDir(void)
@@ -128,6 +137,10 @@ BOOL Common::EndConversation(BOOL force_end)
 		current_conversation_.status==kRecieveSuccess || 
 		force_end)
 	{
+		previous_conversation_.user_bubble = current_conversation_.user_bubble;
+		previous_conversation_.bot_bubble  = current_conversation_.bot_bubble;
+		previous_conversation_.status      = kHistory;
+
 		current_conversation_.user_bubble = NULL;
 		current_conversation_.bot_bubble  = NULL;
 		current_conversation_.status      = kIdle;
@@ -216,6 +229,21 @@ void Common::SetCurrentConversationStatus(ConversationStatus status)
 ConversationStatus Common::GetCurrentConversationStatus(void)
 {
 	return current_conversation_.status;
+}
+
+Bubble * Common::GetPreviousConversationUserBubble(void)
+{
+	return previous_conversation_.user_bubble;
+}
+
+Bubble * Common::GetPreviousConversationBotBubble(void)
+{
+	return previous_conversation_.bot_bubble;
+}
+
+ConversationStatus Common::GetPreviousConversationStatus(void)
+{
+	return previous_conversation_.status;
 }
 
 int Common::ConvertWcharToAnsi(const wchar_t* src, char* dst, int dst_size)

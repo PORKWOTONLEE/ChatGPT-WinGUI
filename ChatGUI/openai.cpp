@@ -260,16 +260,45 @@ char *OpenAI::CompletionJsonConstructor(wchar_t *user_msg)
 	cJSON_AddStringToObject(root,  "model",    "gpt-3.5-turbo");
 	// message 
 	cJSON *message = cJSON_CreateArray();
-	// completion detail	
-	cJSON *completion_detail = cJSON_CreateObject();
-	cJSON_AddStringToObject(completion_detail, "role",    "user");
-	cJSON_AddStringToObject(completion_detail , "content", user_msg_utf8);
-	cJSON_AddItemToArray(message, completion_detail);
+	// completion 
+	cJSON *current_user_msg = cJSON_CreateObject();
+	// context
+	if (Common::GetInstance()->GetPreviousConversationStatus() == kHistory)
+	{
+		char *previous_user_msg_ptr;
+		int previous_user_msg_size;
+		char *previous_bot_msg_ptr;
+		int previous_bot_msg_size;
+
+		previous_user_msg_size = Common::Common::ConvertWcharToUtf8((wchar_t *)Common::GetInstance()->GetPreviousConversationUserBubble()->GetMsgText().GetData());
+	    previous_user_msg_ptr = new char[previous_user_msg_size];
+		memset(previous_user_msg_ptr, 0, previous_user_msg_size);
+		Common::ConvertWcharToUtf8((wchar_t *)Common::GetInstance()->GetPreviousConversationUserBubble()->GetMsgText().GetData(),previous_user_msg_ptr , previous_user_msg_size);
+
+		cJSON *previous_user_msg = cJSON_CreateObject();
+		cJSON_AddStringToObject(previous_user_msg, "role", "user");
+		cJSON_AddStringToObject(previous_user_msg, "content", previous_user_msg_ptr);
+		cJSON_AddItemToArray(message, previous_user_msg);
+
+		previous_bot_msg_size = Common::Common::ConvertWcharToUtf8((wchar_t *)Common::GetInstance()->GetPreviousConversationBotBubble()->GetMsgText().GetData());
+	    previous_bot_msg_ptr = new char[previous_bot_msg_size];
+		memset(previous_bot_msg_ptr, 0, previous_bot_msg_size);
+		Common::ConvertWcharToUtf8((wchar_t *)Common::GetInstance()->GetPreviousConversationUserBubble()->GetMsgText().GetData(),previous_bot_msg_ptr , previous_bot_msg_size);
+
+		cJSON *previous_bot_msg  = cJSON_CreateObject();
+		cJSON_AddStringToObject(previous_bot_msg, "role", "assistant");
+		cJSON_AddStringToObject(previous_bot_msg, "content", previous_bot_msg_ptr);
+		cJSON_AddItemToArray(message, previous_bot_msg);
+	}
+	cJSON_AddStringToObject(current_user_msg,  "role",    "user");
+	cJSON_AddStringToObject(current_user_msg , "content", user_msg_utf8);
+	cJSON_AddItemToArray(message, current_user_msg);
 	cJSON_AddItemToObject(root , "messages", message);
 
 	delete user_msg_utf8;
 
 	// return json
+	OutputDebugStringA(cJSON_Print(root));
 	return cJSON_Print(root);
 }
 

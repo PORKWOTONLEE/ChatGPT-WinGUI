@@ -15,12 +15,12 @@
 		</Container>
 		<Container height="40" pos="0,0,0,40" bkcolor="0xFFFFFFFF" bordercolor="0xFFBFCBD9" bordersize="2" bottombordersize="2">
 			<HorizontalLayout padding="0,10,0,0">
-				<Button name="api_key_btn" width="80" textcolor="0xFF333333" hottextcolor="0xFF000000" text="API Key" font="0" pos="0,0,80,0" tooltip="Click here to input your API Key which you can get from OpenAI" />
+				<Button name="api_key_btn" width="80" textcolor="0xFF333333" hottextcolor="0xFF000000" text="API Key" font="0" pos="0,0,80,0" tooltip="API Key which you can get from OpenAI" />
 				<Edit name="api_key_edit" width="300" height="30" endellipsis="true" autovscroll="true" wantctrlreturn="true" multiline="true" wordbreak="true" font="0" textpadding="10,5,10,5" pos="0,0,300,30" padding="0,5,0,5" bordercolor="0xFFBFCBD9" bordersize="2" borderround="10,10" visible="false" />
-				<Button name="proxy_btn" width="80" textcolor="0xFF333333" hottextcolor="0xFF000000" text="Proxy" font="0" pos="0,0,80,0" tooltip="Click here to input your proxy address If your got VPN. e.g 127.0.0.1:7890" />
+				<Button name="proxy_btn" width="80" textcolor="0xFF333333" hottextcolor="0xFF000000" text="Proxy" font="0" pos="0,0,80,0" tooltip="Use proxy If your got VPN. e.g 127.0.0.1:7890" />
 				<Edit name="proxy_edit" width="300" height="30" endellipsis="true" autovscroll="true" wantctrlreturn="true" multiline="true" wordbreak="true" font="0" textpadding="10,5,10,5" pos="0,0,300,30" padding="0,5,0,5" bordercolor="0xFFBFCBD9" bordersize="2" borderround="10,10" visible="false" />
-				<Button name="context_btn" width="80" textcolor="0xFF333333" hottextcolor="0xFF000000" text="Context" font="0" pos="0,0,80,0" tooltip="Click here to input number of context connect to current conversation. May help AI to understand, but need more token." />
-				<Edit name="context_edit" width="300" height="30" endellipsis="true" autovscroll="true" wantctrlreturn="true" multiline="true" wordbreak="true" font="0" textpadding="10,5,10,5" pos="0,0,300,30" padding="0,5,0,5" bordercolor="0xFFBFCBD9" bordersize="2" borderround="10,10" visible="false" />
+				<Button name="context_btn" width="80" textcolor="0xFF333333" hottextcolor="0xFF000000" text="Context" font="0" pos="0,0,80,0" tooltip="May help AI to understand your current question according to your history conversation, but cost more token." />
+				<CheckBox name="context_checkbox" width="30" selectedimage="file='context_checked.png' dest='5,6,25,26' " align="right" font="0" pos="0,0,30,0" padding="0,5,0,5" bordercolor="0xFFBFCBD9" bordersize="2" borderround="10,10" bkimage="file='context.png' dest='5,6,25,26' " visible="false" />
 			</HorizontalLayout>
 		</Container>
 		<Container childalign="center" bkcolor="0xFFFFFFFF">
@@ -31,7 +31,7 @@
 		<Container height="60" pos="0,0,0,60" bkcolor="0xFFFFFFFF" bordercolor="0xFFBFCBD9" bordersize="2" topbordersize="2">
 			<HorizontalLayout padding="0,10,0,0">
 				<Button name="endown_btn" width="40" height="40" hotbkcolor="0xFFE4E8EF" textcolor="0xFFFFFFFF" hottextcolor="0xFF333333" pushedtextcolor="0xFFFFFFFF" text="⇊" font="2" pos="0,0,40,40" padding="10,10,10,10" bkcolor="0xFF333333" bordercolor="0xFF333333" bordersize="2" borderround="30,30" tooltip="move to bottom" />
-				<RichEdit name="user_msg_edit" height="40" autovscroll="true" wantctrlreturn="true" multiline="true" wordbreak="true" font="0" textpadding="10,5,10,5" pos="0,0,0,40" padding="10,10,0,10" bordercolor="0xFFBFCBD9" bordersize="2" borderround="10,10" />
+				<Edit name="user_msg_edit" height="40" autovscroll="true" wantreturn="true" wantctrlreturn="true" multiline="true" wordbreak="true" font="0" textpadding="10,5,10,5" pos="0,0,0,40" padding="10,10,0,10" bordercolor="0xFFBFCBD9" bordersize="2" borderround="10,10" />
 				<Button name="send_msg_btn" width="130" height="40" hotbkcolor="0xFFE4E8EF" textcolor="0xFFFFFFFF" hottextcolor="0xFF000000" pushedtextcolor="0xFFFFFFFF" text="SEND" font="0" pos="0,0,130,40" padding="10,10,10,10" bkcolor="0xFF333333" bordercolor="0xFF333333" bordersize="2" borderround="15,15" tooltip="send msg" />
 			</HorizontalLayout>
 		</Container>
