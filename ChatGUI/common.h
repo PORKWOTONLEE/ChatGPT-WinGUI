@@ -53,6 +53,10 @@ public:
 	Bubble *GetPreviousConversationBotBubble(void);
 	ConversationStatus GetPreviousConversationStatus(void);
 
+	BOOL StartInfo(CListUI *owner, CDuiString info_msg);
+
+	BOOL StartTimeStamp(CListUI *owner);
+
 	static int ConvertWcharToAnsi(const wchar_t *src, char * dst = NULL, int dst_size = 0);
 	static int ConvertWcharToUtf8(const wchar_t *src, char * dst = NULL, int dst_size = 0);
 	static int ConvertAnisToWchar(const char * src, wchar_t * dst, int dst_size);

@@ -245,6 +245,25 @@ ConversationStatus Common::GetPreviousConversationStatus(void)
 	return previous_conversation_.status;
 }
 
+BOOL Common::StartInfo(CListUI * owner, CDuiString info_msg)
+{
+	Bubble *info_bubble = new Bubble(owner, Bubble::BubbleType::kInfoBubble);
+	owner->Add(info_bubble);
+	info_bubble->SetMetaMsgText(info_msg, Bubble::MetaMsgType::kInfoMetaMsg);
+
+	return TRUE;
+}
+
+BOOL Common::StartTimeStamp(CListUI * owner)
+{
+	SYSTEMTIME system_time;
+	::GetLocalTime(&system_time);
+	wchar_t system_time_str[100];
+	wsprintf(system_time_str, _T("%02d-%02d-%02d %02d:%02d"), system_time.wYear, system_time.wMonth, system_time.wDay, system_time.wHour, system_time.wMinute);
+
+	return Common::GetInstance()->StartInfo(owner, system_time_str);
+}
+
 int Common::ConvertWcharToAnsi(const wchar_t* src, char* dst, int dst_size)
 {
 	return WideCharToMultiByte(CP_ACP, 0, src, -1, dst, dst_size, NULL, NULL);

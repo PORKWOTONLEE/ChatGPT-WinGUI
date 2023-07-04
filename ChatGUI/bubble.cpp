@@ -42,8 +42,8 @@ void Bubble::SetMetaMsgText(LPCTSTR text, MetaMsgType type)
 	case kErrorMetaMsg:
 		meta_msg_->SetTextColor(0xFFFF697D);
 		break;
-	case kWarningMetaMsg:
-		meta_msg_->SetTextColor(0xFFFDE566);
+	case kInfoMetaMsg:
+		meta_msg_->SetTextColor(0xFF333333);
 		break;
 	default:
 		meta_msg_->SetTextColor(0xFF70CC97);
@@ -75,6 +75,9 @@ void Bubble::Notify(TNotifyUI& msg)
 			outline_container_->SetBorderColor(0xFFBFCBD9);
 			outline_container_->SetBkColor(0xFF333333);
 			msg_->SetTextColor(0XFFFFFFFF);
+			break;
+		case kInfoBubble:
+			outline_container_->SetVisible(FALSE);
 			break;
 		default:
 			outline_container_->SetBorderColor(0xFFBFCBD9);
@@ -150,44 +153,52 @@ SIZE Bubble::EstimateSize(SIZE szAvailable)
 	SIZE msg_check_sz = { 0 }, msg_sz = { 0 };
 	int current_line_len = 0, next_line_len = 0;
 	CDuiPoint current_line_point, next_line_point;
-	if (msg_->GetLineCount() > 1)
+	if (bubble_type_ != kInfoBubble)
 	{
-		// multi line 
-		// caculate not zero minimum line height
-		for (int i = 0; i < msg_->GetLineCount() - 1; ++i)
+		if (msg_->GetLineCount() > 1)
 		{
-			current_line_len += msg_->LineLength(i);
-			next_line_len += msg_->LineLength(i + 1);
-			current_line_point = msg_->PosFromChar(current_line_len);
-			next_line_point = msg_->PosFromChar(current_line_len + next_line_len);
-			if ((line_height_ == 0 || next_line_point.y - current_line_point.y < line_height_) &&
-				next_line_point.y - current_line_point.y != 0)
+			// multi line 
+			// caculate not zero minimum line height
+			for (int i = 0; i < msg_->GetLineCount() - 1; ++i)
 			{
-				line_height_ = next_line_point.y - current_line_point.y;
+				current_line_len += msg_->LineLength(i);
+				next_line_len += msg_->LineLength(i + 1);
+				current_line_point = msg_->PosFromChar(current_line_len);
+				next_line_point = msg_->PosFromChar(current_line_len + next_line_len);
+				if ((line_height_ == 0 || next_line_point.y - current_line_point.y < line_height_) &&
+					next_line_point.y - current_line_point.y != 0)
+				{
+					line_height_ = next_line_point.y - current_line_point.y;
+				}
 			}
-		}
-		if (line_height_ == 0)
-		{
-			line_height_ = 23;
-		}
+			if (line_height_ == 0)
+			{
+				line_height_ = 23;
+			}
 
-		msg_sz.cx = max_msg_width;
-		msg_sz.cy = line_height_ * msg_->GetLineCount();
-	}
-	else
-	{
-		// single line
-		::GetTextExtentExPoint(dc, msg_->GetText(), lstrlenW(msg_->GetText()), max_msg_width, NULL, NULL, &msg_check_sz);
-		if (msg_check_sz.cx > max_msg_width)
-		{
-			msg_sz.cx = msg_check_sz.cx;
-			line_height_ = msg_check_sz.cy + 6;
-			msg_sz.cy = line_height_ * (msg_check_sz.cx / max_msg_width + ((msg_check_sz.cx%max_msg_width > 2 * msg_check_sz.cy) ? 1 : 0));
+			msg_sz.cx = max_msg_width;
+			msg_sz.cy = line_height_ * msg_->GetLineCount();
 		}
 		else
 		{
-			msg_sz = msg_check_sz;
+			// single line
+			::GetTextExtentExPoint(dc, msg_->GetText(), lstrlenW(msg_->GetText()), max_msg_width, NULL, NULL, &msg_check_sz);
+			if (msg_check_sz.cx > max_msg_width)
+			{
+				msg_sz.cx = msg_check_sz.cx;
+				line_height_ = msg_check_sz.cy + 6;
+				msg_sz.cy = line_height_ * (msg_check_sz.cx / max_msg_width + ((msg_check_sz.cx%max_msg_width > 2 * msg_check_sz.cy) ? 1 : 0));
+			}
+			else
+			{
+				msg_sz = msg_check_sz;
+			}
 		}
+	}
+	else
+	{
+		msg_sz.cx = 0;
+		msg_sz.cy = 0;
 	}
 
 	// caculate meta msg size
@@ -202,16 +213,28 @@ SIZE Bubble::EstimateSize(SIZE szAvailable)
 		outline_container_->SetPos(RECT{ szAvailable.cx - msg_sz.cx - 20, 10, szAvailable.cx, msg_sz.cy + 14 + 10 });
 		meta_msg_->SetPos(RECT{ szAvailable.cx - meta_msg_check_sz.cx, msg_sz.cy + 14 + 10, szAvailable.cx, msg_sz.cy + 14 + 10 + meta_msg_sz.cy });
 	}
-	else
+	else if (bubble_type_ == kBotBubble)
 	{
 		outline_container_->SetPos(RECT{ 0, 10, msg_sz.cx + 20, msg_sz.cy + 14 + 10 });
 		meta_msg_->SetPos(RECT{ 0, msg_sz.cy + 14 + 10, meta_msg_sz.cx, msg_sz.cy + 14 + 10 + meta_msg_sz.cy });
+	}
+	else
+	{
+		outline_container_->SetPos(RECT{ 0, 0, msg_sz.cx, msg_sz.cy });
+		meta_msg_->SetPos(RECT{ 0, 0, szAvailable.cx, meta_msg_sz.cy });
 	}
 
 	// caculate bubble size
 	SIZE bubble_sz;
 	bubble_sz.cx = szAvailable.cx;
-	bubble_sz.cy = msg_sz.cy + meta_msg_sz.cy + 20;
+	if (bubble_type_ != kInfoBubble)
+	{
+		bubble_sz.cy = msg_sz.cy + meta_msg_sz.cy + 20;
+	}
+	else
+	{
+		bubble_sz.cy = msg_sz.cy + meta_msg_sz.cy;
+	}
 
 	// clean temp value
 	::ReleaseDC(Common::GetInstance()->GetMainWindowHWND(), dc);

@@ -12,7 +12,8 @@ public:
 	typedef enum
 	{
 		kUserBubble,
-		kBotBubble
+		kBotBubble,
+		kInfoBubble
 
 	}BubbleType;
 
@@ -20,7 +21,7 @@ public:
 	{
 		kNormalMetaMsg,
 		kErrorMetaMsg,
-		kWarningMetaMsg,
+		kInfoMetaMsg,
 
 	}MetaMsgType;
 
