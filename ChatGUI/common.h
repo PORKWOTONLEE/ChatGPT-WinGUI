@@ -4,7 +4,9 @@
 
 typedef enum
 {
-	kHistory,
+	// others
+	kInfo,
+	// conversation
 	kIdle,
 	kSending,
 	kSendSuccess,

@@ -80,14 +80,14 @@ void MainWindow::Notify(TNotifyUI & msg)
 	{
 		if (msg.pSender == user_msg_edit_)
 		{
-			StartConversation();
+			AddConversation();
 		}
 	}
 	else if (msg.sType == DUI_MSGTYPE_CLICK)
 	{
 		if (msg.pSender == send_msg_btn_)
 		{
-			StartConversation();
+			AddConversation();
 		}
 		else if (msg.pSender == close_btn_)
 		{
@@ -122,9 +122,9 @@ void MainWindow::MenuToggler(CControlUI * widget)
 		api_key_edit_->SetVisible(FALSE);
 		proxy_edit_->SetVisible(FALSE);
 	}
-	else if (widget != api_key_edit_ ||
-		widget != proxy_edit_ ||
-		widget != context_checkbox_)
+	else if (widget != api_key_edit_ && 
+			widget != proxy_edit_ && 
+			widget != context_checkbox_)
 	{
 		api_key_edit_->SetVisible(FALSE);
 		proxy_edit_->SetVisible(FALSE);
@@ -155,7 +155,7 @@ void MainWindow::SaveConfig(CControlUI * widget)
 	}
 }
 
-void MainWindow::StartConversation(void)
+void MainWindow::AddConversation(void)
 {
 	// ignore empty msg
 	if (Common::GetInstance()->GetCurrentConversationStatus() != kIdle)

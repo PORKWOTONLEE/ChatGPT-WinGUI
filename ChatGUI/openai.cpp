@@ -263,7 +263,8 @@ char *OpenAI::CompletionJsonConstructor(wchar_t *user_msg)
 	// completion 
 	cJSON *current_user_msg = cJSON_CreateObject();
 	// context
-	if (Common::GetInstance()->GetPreviousConversationStatus() == kHistory)
+	if (Common::GetInstance()->LoadContext() && 
+		Common::GetInstance()->GetPreviousConversationStatus() == kRecieveSuccess)
 	{
 		char *previous_user_msg_ptr;
 		int previous_user_msg_size;

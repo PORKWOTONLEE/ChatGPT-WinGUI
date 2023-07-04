@@ -112,15 +112,13 @@ BOOL Common::StartConversation(CListUI * owner, CDuiString user_msg)
 		current_conversation_.user_bubble = new Bubble(owner, Bubble::BubbleType::kUserBubble);
 		current_conversation_.bot_bubble = new Bubble(owner, Bubble::BubbleType::kBotBubble);
 
-		// add bubble
+		// set user bubble
 		owner->Add(current_conversation_.user_bubble);
-		owner->Add(current_conversation_.bot_bubble);
+		current_conversation_.user_bubble->SetMsgText(user_msg);
 
-		// set user msg
-		if (current_conversation_.user_bubble != NULL)
-		{
-			current_conversation_.user_bubble->SetMsgText(user_msg);
-		}
+		// set bot bubble
+		owner->Add(current_conversation_.bot_bubble);
+		current_conversation_.bot_bubble->SetVisible(FALSE);
 
 		// send user msg throw curl
 		OpenAI::StartTask(OpenAI::kCompletion);
@@ -139,7 +137,7 @@ BOOL Common::EndConversation(BOOL force_end)
 	{
 		previous_conversation_.user_bubble = current_conversation_.user_bubble;
 		previous_conversation_.bot_bubble  = current_conversation_.bot_bubble;
-		previous_conversation_.status      = kHistory;
+		previous_conversation_.status      = current_conversation_.status;
 
 		current_conversation_.user_bubble = NULL;
 		current_conversation_.bot_bubble  = NULL;
@@ -210,6 +208,7 @@ void Common::SetCurrentConversationStatus(ConversationStatus status)
 	case kRecieving:
 		if (current_conversation_.status == kSendSuccess)
 		{
+			current_conversation_.bot_bubble->SetVisible(TRUE);
 			current_conversation_.status = status;
 			current_conversation_.bot_bubble->SetMetaMsgText(_T("Recieving"));
 		}

@@ -23,7 +23,7 @@ private:
 	void MenuToggler(CControlUI *widget);
 	void LoadConfig(void);
 	void SaveConfig(CControlUI *widget);
-	void StartConversation(void);
+	void AddConversation(void);
 
 private:
 	CListUI     *chat_box_;
